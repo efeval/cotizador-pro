@@ -1,0 +1,190 @@
+{% extends "cotizador/base.html" %}
+{% load humanize %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="mt-3 mb-4">
+  <h3>Dashboard</h3>
+  {% if es_system_owner %}
+    <p class="text-muted">Resumen general de tus Pymes (clientes) y usuarios en el sistema.</p>
+  {% else %}
+    <p class="text-muted">Resumen general de tus productos, clientes y cotizaciones.</p>
+  {% endif %}
+</div>
+
+{% if es_system_owner %}
+  <!-- DASHBOARD DUEÑO DEL SISTEMA -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted text-uppercase mb-1">Pymes</h6>
+          <h3 class="mb-0">{{ stats.total_pymes }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted text-uppercase mb-1">Pymes activas</h6>
+          <h3 class="mb-0">{{ stats.pymes_activas }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted text-uppercase mb-1">Pymes no activas</h6>
+          <h3 class="mb-0">{{ stats.pymes_inactivas }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted text-uppercase mb-1">Usuarios con perfil</h6>
+          <h3 class="mb-0">{{ stats.total_usuarios }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h5 class="mb-0">Pymes registradas en el sistema</h5>
+    <a href="{% url 'cotizador:admin_crear_pyme' %}" class="btn btn-primary btn-sm">
+      + Nueva Pyme
+    </a>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <table class="table mb-0 table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Razón social</th>
+            <th>Correo</th>
+            <th>Representante</th>
+            <th>Activo</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for py in pymes %}
+            <tr>
+              <td>{{ py.nombre }}</td>
+              <td>{{ py.razon_social }}</td>
+              <td>{{ py.email }}</td>
+              <td>{{ py.representante }}</td>
+              <td>
+                {% if py.activo %}
+                  <span class="badge bg-success">Sí</span>
+                {% else %}
+                  <span class="badge bg-secondary">No</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <a href="{% url 'cotizador:admin_editar_pyme' py.id %}" class="btn btn-sm btn-outline-primary">
+                  Editar
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-muted py-3">
+                No hay Pymes registradas todavía.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+{% else %}
+  <!-- DASHBOARD DUEÑO PYME / VENDEDOR -->
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted text-uppercase mb-1">Productos activos</h6>
+          <h3 class="mb-0">{{ stats.total_productos }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted text-uppercase mb-1">Clientes</h6>
+          <h3 class="mb-0">{{ stats.total_clientes }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted text-uppercase mb-1">Cotizaciones enviadas</h6>
+          <h3 class="mb-0">{{ stats.cotizaciones_pendientes|default:0 }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h6 class="text-muted text-uppercase mb-1">Total cotizaciones</h6>
+          <h3 class="mb-0">{{ stats.cotizaciones_este_mes|default:0 }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h5>Últimas cotizaciones</h5>
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <table class="table mb-0 table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in ultimas_cotizaciones %}
+            <tr>
+              <td>#{{ c.id }}</td>
+              <td>{{ c.cliente.nombre }}</td>
+              <td>{{ c.get_estado_display }}</td>
+              <td>{{ c.fecha_creacion|date:"d/m/Y H:i" }}</td>
+              <td>${{ c.total|floatformat:0 }}</td>
+              <td>
+                <a href="{% url 'cotizador:detalle_cotizacion' c.id %}" class="btn btn-sm btn-outline-primary">
+                  Ver
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" class="text-center text-muted py-3">
+                No hay cotizaciones registradas aún.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endif %}
+
+{% endblock %}

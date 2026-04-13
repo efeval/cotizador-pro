@@ -1,0 +1,28 @@
+{% extends "cotizador/base.html" %}
+
+{% block title %}Eliminar Pyme{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Eliminar Pyme</h2>
+  <p class="text-muted">
+    Estás a punto de eliminar la Pyme <strong>{{ pyme.nombre }}</strong>.
+  </p>
+
+  <div class="alert alert-warning">
+    <strong>¡Atención!</strong> Esta acción eliminará la Pyme y
+    todos los datos asociados (clientes, productos, cotizaciones, etc.).
+    No se puede deshacer.
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <a href="{% url 'cotizador:admin_lista_pymes' %}" class="btn btn-secondary">
+      Cancelar
+    </a>
+    <button type="submit" class="btn btn-danger">
+      Sí, eliminar Pyme
+    </button>
+  </form>
+</div>
+{% endblock %}

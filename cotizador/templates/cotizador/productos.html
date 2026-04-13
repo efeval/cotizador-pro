@@ -1,0 +1,125 @@
+{% extends "cotizador/base.html" %}
+{% load humanize %}
+
+{% block title %}Productos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+      <h2 class="mb-0">Productos</h2>
+      <p class="text-muted mb-0">Gestiona tu inventario.</p>
+    </div>
+
+    <a href="{% url 'cotizador:crear_producto' %}" class="btn-personal">
+      Nuevo Producto
+    </a>
+  </div>
+
+  <form method="get" class="row g-2 mb-3 align-items-end">
+    <div class="col-md-6 col-12">
+      <input
+        type="text"
+        name="q"
+        class="form-control"
+        placeholder="Buscar por nombre, marca o tipo"
+        value="{{ q|default:'' }}"
+      >
+    </div>
+    <div class="col-auto d-flex gap-2">
+      <button type="submit" class="btn-personal">Buscar</button>
+      <a href="{% url 'cotizador:lista_productos' %}" class="btn-personal btn-personal-secundario">
+        Limpiar
+      </a>
+    </div>
+  </form>
+
+  {% if productos %}
+    <div class="table-responsive">
+      <table class="table-personal table-striped table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Marca</th>
+            <th class="text-end">Precio</th>
+            <th class="text-end">Impuesto</th>
+            <th class="text-end">Imp. adicional</th>
+            <th class="text-center">Activo</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for producto in productos %}
+            <tr>
+              <td class="fw-semibold">{{ producto.nombre }}</td>
+
+              <td>
+                <span class="badge rounded-pill text-bg-light">
+                  {{ producto.get_tipo_display }}
+                </span>
+              </td>
+
+              <td>
+                {% if producto.marca %}
+                  {{ producto.marca }}
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+
+              <td class="text-end">
+                ${{ producto.precio|floatformat:0|intcomma }}
+              </td>
+
+              <td class="text-end">
+                {% if producto.impuesto %}
+                  {{ producto.impuesto|floatformat:2 }}%
+                {% else %}
+                  <span class="text-muted">0,00%</span>
+                {% endif %}
+              </td>
+
+              <td class="text-end">
+                {% if producto.impuesto_adicional %}
+                  {{ producto.impuesto_adicional|floatformat:2 }}%
+                {% else %}
+                  <span class="text-muted">—</span>
+                {% endif %}
+              </td>
+
+              <td class="text-center">
+                {% if producto.activo %}
+                  <span class="badge text-bg-success">Sí</span>
+                {% else %}
+                  <span class="badge text-bg-secondary">No</span>
+                {% endif %}
+              </td>
+
+              <td class="text-end">
+                <div class="d-inline-flex gap-2">
+                  <a href="{% url 'cotizador:editar_producto' producto.pk %}"
+                     class="btn-personal btn-personal-sm">
+                    Editar
+                  </a>
+                  <a href="{% url 'cotizador:eliminar_producto' producto.pk %}"
+                     class="btn-personal btn-personal-sm btn-personal-secundario">
+                    Eliminar
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info border">
+      No hay productos registrados aún.
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

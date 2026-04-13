@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+
+# Entorno virtual
+venv/
+
+# Base de datos
+db.sqlite3
+
+# Archivos sensibles
+.env
+
+# Mac
+.DS_Store
+
+# Static files
+staticfiles/
+
+# Media (opcional)
+media/

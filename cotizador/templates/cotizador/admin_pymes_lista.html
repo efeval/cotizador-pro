@@ -1,0 +1,57 @@
+{% extends "cotizador/base.html" %}
+
+{% block title %}Pymes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+  <h3>Pymes del sistema</h3>
+  <a href="{% url 'cotizador:admin_crear_pyme' %}" class="btn btn-primary">
+    <i class="bi bi-plus-lg"></i> Nueva Pyme
+  </a>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <table class="table mb-0 table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Nombre</th>
+          <th>Razón social</th>
+          <th>Correo</th>
+          <th>Representante</th>
+          <th>Activo</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for py in pymes %}
+          <tr>
+            <td>{{ py.nombre }}</td>
+            <td>{{ py.razon_social }}</td>
+            <td>{{ py.email }}</td>
+            <td>{{ py.representante }}</td>
+            <td>
+              {% if py.activo %}
+                <span class="badge bg-success">Sí</span>
+              {% else %}
+                <span class="badge bg-secondary">No</span>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <a href="{% url 'cotizador:admin_editar_pyme' py.id %}" class="btn btn-sm btn-outline-primary">
+                Editar
+              </a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-3">
+              No hay Pymes registradas todavía.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

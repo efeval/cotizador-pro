@@ -1,0 +1,158 @@
+{% extends "cotizador/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Nuevo vendedor{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 980px;">
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-3">
+    <div>
+      <h2 class="mb-1">Nuevo vendedor</h2>
+      <p class="text-muted mb-0">
+        El vendedor podrá iniciar sesión y crear cotizaciones para esta Pyme.
+      </p>
+    </div>
+
+    <a href="{% url 'cotizador:lista_vendedores' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver
+    </a>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4 p-md-5">
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
+        <div class="row g-3">
+          <!-- Usuario -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Nombre de usuario</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              {{ form.username }}
+            </div>
+            {% if form.username.errors %}
+              <div class="text-danger small mt-1">{{ form.username.errors|striptags }}</div>
+            {% else %}
+              <div class="text-muted small mt-1">Será el usuario con el que iniciará sesión.</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Correo electrónico</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              {{ form.email }}
+            </div>
+            {% if form.email.errors %}
+              <div class="text-danger small mt-1">{{ form.email.errors|striptags }}</div>
+            {% else %}
+              <div class="text-muted small mt-1">Opcional (recomendado para recuperar contraseña).</div>
+            {% endif %}
+          </div>
+
+          <!-- Nombre / Apellido -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Nombre</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+              {{ form.first_name }}
+            </div>
+            {% if form.first_name.errors %}
+              <div class="text-danger small mt-1">{{ form.first_name.errors|striptags }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Apellido</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
+              {{ form.last_name }}
+            </div>
+            {% if form.last_name.errors %}
+              <div class="text-danger small mt-1">{{ form.last_name.errors|striptags }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Password -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Contraseña</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              {{ form.password1 }}
+            </div>
+            {% if form.password1.errors %}
+              <div class="text-danger small mt-1">{{ form.password1.errors|striptags }}</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Confirmar contraseña</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+              {{ form.password2 }}
+            </div>
+            {% if form.password2.errors %}
+              <div class="text-danger small mt-1">{{ form.password2.errors|striptags }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Reglas password (más lindo que bullets gigantes) -->
+          <div class="col-12">
+            <div class="alert alert-light border small mb-0">
+              <div class="fw-semibold mb-1"><i class="bi bi-shield-check"></i> Recomendaciones de contraseña</div>
+              <ul class="mb-0">
+                <li>Mínimo 8 caracteres.</li>
+                <li>Evita contraseñas comunes o sólo números.</li>
+                <li>No uses datos personales obvios.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Descuento -->
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Descuento máximo personal (%)</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-percent"></i></span>
+              {{ form.descuento_maximo_personal }}
+            </div>
+            {% if form.descuento_maximo_personal.errors %}
+              <div class="text-danger small mt-1">{{ form.descuento_maximo_personal.errors|striptags }}</div>
+            {% else %}
+              <div class="text-muted small mt-1">Opcional. Si lo dejas vacío, se usará el máximo definido en la Pyme.</div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-6 d-flex align-items-end">
+            <div class="w-100 rounded-3 p-3 bg-light border">
+              <div class="fw-semibold mb-1"><i class="bi bi-info-circle"></i> Tip</div>
+              <div class="text-muted small">
+                Puedes crear el vendedor ahora y después ajustar sus permisos o descuento.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'cotizador:lista_vendedores' %}" class="btn btn-outline-secondary">
+            Cancelar
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-person-plus"></i> Crear vendedor
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

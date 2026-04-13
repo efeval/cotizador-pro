@@ -1,0 +1,136 @@
+{% extends "cotizador/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8 col-xl-7">
+
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h3 class="mb-0">{{ titulo }}</h3>
+        <p class="text-muted mb-0">
+          Completa los datos principales de la Pyme (cliente del sistema).
+        </p>
+      </div>
+      <a href="{% url 'cotizador:admin_lista_pymes' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Volver
+      </a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+
+        <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nombre</label>
+              {{ form.nombre }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">RUT</label>
+              {{ form.rut }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Razón social</label>
+              {{ form.razon_social }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Giro</label>
+              {{ form.giro }}
+            </div>
+
+            <div class="col-md-8">
+              <label class="form-label">Dirección</label>
+              {{ form.direccion }}
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Teléfono</label>
+              {{ form.telefono }}
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              {{ form.email }}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Representante</label>
+              {{ form.representante }}
+            </div>
+
+            <hr class="my-2"/>
+
+            <div class="col-md-6">
+              <label class="form-label">Logo de la Pyme</label>
+              {{ form.logo }}
+              <div class="form-text">
+                PNG/JPG recomendado. Se mostrará en la página pública.
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Vista previa</label>
+              <div class="border rounded p-3 bg-light d-flex align-items-center justify-content-center"
+                   style="min-height:120px">
+                {% if form.instance.logo %}
+                  <img src="{{ form.instance.logo.url }}" alt="logo"
+                       style="max-height:110px; max-width:100%; object-fit:contain;">
+                {% else %}
+                  <span class="text-muted">Sin logo aún</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Dueño</label>
+              {{ form.dueno }}
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+              <div class="form-check form-switch">
+                {{ form.activo }}
+                <label class="form-check-label ms-2">Pyme activa</label>
+              </div>
+            </div>
+          </div>
+
+          {% if form.errors %}
+            <div class="alert alert-danger mt-3">
+              Revisa los campos marcados.
+              {{ form.errors }}
+            </div>
+          {% endif %}
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-save"></i> Guardar
+            </button>
+            <a href="{% url 'cotizador:admin_lista_pymes' %}" class="btn btn-outline-secondary">
+              Cancelar
+            </a>
+          </div>
+        </form>
+
+        {# --- SOLO mostrar eliminar si la Pyme ya existe (modo editar) --- #}
+        {% if form.instance.pk %}
+          <hr class="mt-4">
+          <div class="d-flex justify-content-end">
+            <form method="post"
+                  action="{% url 'cotizador:admin_eliminar_pyme' form.instance.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-danger">
+                <i class="bi bi-trash"></i> Eliminar Pyme
+              </button>
+            </form>
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

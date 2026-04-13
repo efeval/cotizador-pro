@@ -1,0 +1,93 @@
+{% extends "cotizador/base.html" %}
+
+{% block title %}Elegir Pyme{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <!-- Cabecera -->
+  <div class="mb-4">
+    <h2 class="mb-1">Elige qué Pyme quieres gestionar</h2>
+    <p class="text-muted mb-0">
+      Tienes más de una Pyme asociada. Selecciona una para ir al panel de gestión.
+    </p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+          <form method="post">
+            {% csrf_token %}
+
+            <div class="list-group mb-4">
+              {% for pyme in pymes %}
+                <label class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3"
+                       style="border-radius: 0.75rem; margin-bottom: 0.5rem; border:1px solid #e5e7eb;">
+                  <div class="d-flex align-items-center gap-3">
+
+                    <!-- Avatar con iniciales -->
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width:44px; height:44px; background:linear-gradient(135deg,#0f172a,#1d4ed8); color:#fff; font-weight:700;">
+                      {{ pyme.nombre|slice:":2"|upper }}
+                    </div>
+
+                    <div>
+                      <div class="fw-semibold">{{ pyme.nombre }}</div>
+                      <div class="text-muted small">
+                        {% if pyme.rut %}{{ pyme.rut }}{% else %}Sin RUT{% endif %}
+                        {% if pyme.giro %} · {{ pyme.giro|lower }}{% endif %}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2">
+                    {% if pyme.activo %}
+                      <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle small">
+                        Activa
+                      </span>
+                    {% else %}
+                      <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle small">
+                        Inactiva
+                      </span>
+                    {% endif %}
+
+                    <!-- Radio real -->
+                    <input
+                      class="form-check-input ms-2"
+                      type="radio"
+                      name="pyme_id"
+                      value="{{ pyme.id }}"
+                      {% if pyme.id|stringformat:"s" == pyme_actual_id|stringformat:"s" or forloop.first and not pyme_actual_id %}checked{% endif %}
+                      aria-label="Elegir esta Pyme">
+                  </div>
+                </label>
+              {% empty %}
+                <div class="alert alert-info mb-0">
+                  No tienes Pymes asociadas todavía.
+                </div>
+              {% endfor %}
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <a href="{% url 'cotizador:dashboard' %}" class="btn btn-outline-secondary">
+                Cancelar
+              </a>
+
+              <button type="submit" class="btn btn-primary">
+                Continuar
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
