@@ -16,13 +16,9 @@ Sistema web tipo SaaS para gestión de PYMES, catálogo público y generación d
 - PostgreSQL
 - Bootstrap 5
 - Render (deploy)
-
 ## 🌐 Demo en producción
-👉 https://TU-URL.onrender.com
 
-## 🚀 Vista del sistema
-
-## 🚀 Vista del sistema
+👉 [Ver Cotizador PRO en vivo](https://cotizador-pro-qhcu.onrender.com/cotizador/)
 
 ### 📊 Catálogo
 ![Catálogo](screenshots/catalogo.png)
