@@ -1,0 +1,75 @@
+{% extends "cotizador/base.html" %}
+{% load humanize %}
+
+{% block title %}Vendedores{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+  <div>
+    <h3 class="mb-1">Vendedores de {{ pyme.nombre }}</h3>
+    <p class="text-muted mb-0">
+      Descuento máximo general para vendedores:
+      <strong>{{ pyme.descuento_maximo_vendedores|floatformat:2 }}%</strong>
+    </p>
+  </div>
+
+  <div>
+    <a href="{% url 'cotizador:crear_vendedor' %}" class="btn btn-primary">
+      <i class="bi bi-plus-lg"></i> Nuevo vendedor
+    </a>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <table class="table mb-0 table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Usuario</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th class="text-end">Descuento máximo personal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vendedores %}
+          <tr>
+            <td class="fw-semibold">{{ v.user.username }}</td>
+            <td>
+              {% if v.user.first_name or v.user.last_name %}
+                {{ v.user.first_name }} {{ v.user.last_name }}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if v.user.email %}
+                {{ v.user.email }}
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+
+            <td class="text-end">
+              {# OJO: 0 es falso. Hay que preguntar por None #}
+              {% if v.descuento_maximo_personal is not None %}
+                <span class="badge text-bg-primary">
+                  {{ v.descuento_maximo_personal|floatformat:2 }}%
+                </span>
+              {% else %}
+                <span class="text-muted">Usa el de la Pyme</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="4" class="text-center text-muted py-3">
+              No hay vendedores registrados todavía.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

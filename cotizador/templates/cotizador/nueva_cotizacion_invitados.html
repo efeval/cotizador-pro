@@ -1,0 +1,265 @@
+{% extends "cotizador/base.html" %}
+{% load humanize %}
+{% block title %}Cotizar como invitado{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+    <div>
+      <h2 class="mb-0">Cotizar como invitado - {{ pyme.nombre }}</h2>
+      <div class="text-muted">Completa tus datos, selecciona productos y envía tu cotización.</div>
+    </div>
+    <a href="{% url 'cotizador:pyme_publica' pyme.id %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Volver al catálogo
+    </a>
+  </div>
+
+  <hr>
+
+  <form method="post" id="form-cotizar">
+    {% csrf_token %}
+
+    <!-- 1) Datos básicos -->
+    <div class="card shadow-sm border-0 mb-3">
+      <div class="card-body">
+        <h5 class="mb-3">Tus datos</h5>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Tu nombre</label>
+            <input type="text" name="nombre_invitado" class="form-control" required>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Tu correo</label>
+            <input type="email" name="email_invitado" class="form-control" required>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Ciudad</label>
+            <input type="text" name="ciudad" class="form-control" placeholder="Ej: Santiago" required>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label d-block">Recomendado por vendedor</label>
+            <div class="d-flex gap-3 align-items-center">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="recomendado_por_vendedor" id="rec_no" value="no" checked>
+                <label class="form-check-label" for="rec_no">No</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="recomendado_por_vendedor" id="rec_si" value="si">
+                <label class="form-check-label" for="rec_si">Sí</label>
+              </div>
+            </div>
+
+            <div class="mt-2" id="wrap-vendedor" style="display:none;">
+              <label class="form-label">Selecciona vendedor</label>
+              <select class="form-select" name="vendedor_recomendador" id="select-vendedor">
+                <option value="">-- Selecciona un vendedor --</option>
+                {% for v in vendedores %}
+                  <option value="{{ v.user.id }}">
+                    {{ v.user.first_name }} {{ v.user.last_name }} ({{ v.user.username }})
+                  </option>
+                {% endfor %}
+              </select>
+              <div class="form-text">Si no conoces el vendedor, deja “No”.</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Productos -->
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h5 class="mb-0">Productos</h5>
+          <span class="badge text-bg-light border">
+            Total: <span id="total_general">$0</span>
+          </span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle mb-2" id="tabla-items">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 45%;">Producto</th>
+                <th style="width: 15%;">Cantidad</th>
+                <th style="width: 20%;">Precio ref.</th>
+                <th style="width: 20%;">Subtotal</th>
+                <th style="width: 1%;" class="text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="item-row">
+                <td>
+                  <!-- IMPORTANTE: name="producto" (varios) se lee con getlist() -->
+                  <select name="producto" class="form-select producto-select" required>
+                    <option value="">-- Selecciona un producto --</option>
+                    {% for p in productos %}
+                      <option value="{{ p.id }}" data-precio="{{ p.precio }}">
+                        {{ p.nombre }} ({{ p.get_tipo_display }}) - ${{ p.precio|floatformat:0|intcomma }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </td>
+
+                <td>
+                  <input type="number" name="cantidad" class="form-control cantidad-input" value="1" min="1" required>
+                </td>
+
+                <td>
+                  <span class="precio-ref text-muted">-</span>
+                </td>
+
+                <td>
+                  <span class="subtotal-ref text-muted">-</span>
+                </td>
+
+                <td class="text-center">
+                  <button type="button" class="btn btn-outline-danger btn-sm btn-eliminar" title="Eliminar ítem">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button type="button" id="btn-agregar-fila" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-plus-lg"></i> Agregar ítem
+        </button>
+
+        <div class="mt-4 d-flex justify-content-end gap-2">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-send"></i> Enviar cotización
+          </button>
+          <a href="{% url 'cotizador:home_publica' %}" class="btn btn-secondary">Volver</a>
+        </div>
+
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const tablaBody = document.querySelector('#tabla-items tbody');
+  const btnAgregar = document.getElementById('btn-agregar-fila');
+  const totalGeneralEl = document.getElementById('total_general');
+
+  const recNo = document.getElementById('rec_no');
+  const recSi = document.getElementById('rec_si');
+  const wrapVendedor = document.getElementById('wrap-vendedor');
+  const selectVendedor = document.getElementById('select-vendedor');
+
+  function formatMoney(n) {
+    // formato simple tipo CLP: 400000 -> 400.000
+    const num = Math.round(Number(n || 0));
+    return '$' + num.toLocaleString('es-CL');
+  }
+
+  function getPrecioFromRow(row) {
+    const select = row.querySelector('.producto-select');
+    const option = select.options[select.selectedIndex];
+    const precio = option ? option.getAttribute('data-precio') : null;
+    return precio ? Number(String(precio).replace(',', '.')) : 0;
+  }
+
+  function getCantidadFromRow(row) {
+    const input = row.querySelector('.cantidad-input');
+    const v = Number(input.value || 0);
+    return v > 0 ? v : 0;
+  }
+
+  function actualizarFila(row) {
+    const precio = getPrecioFromRow(row);
+    const cantidad = getCantidadFromRow(row);
+
+    const precioSpan = row.querySelector('.precio-ref');
+    const subtotalSpan = row.querySelector('.subtotal-ref');
+
+    if (precio) {
+      precioSpan.textContent = formatMoney(precio);
+      subtotalSpan.textContent = formatMoney(precio * cantidad);
+      precioSpan.classList.remove('text-muted');
+      subtotalSpan.classList.remove('text-muted');
+    } else {
+      precioSpan.textContent = '-';
+      subtotalSpan.textContent = '-';
+      precioSpan.classList.add('text-muted');
+      subtotalSpan.classList.add('text-muted');
+    }
+  }
+
+  function actualizarTotal() {
+    let total = 0;
+    tablaBody.querySelectorAll('.item-row').forEach(row => {
+      const precio = getPrecioFromRow(row);
+      const cantidad = getCantidadFromRow(row);
+      if (precio && cantidad) total += precio * cantidad;
+    });
+    totalGeneralEl.textContent = formatMoney(total);
+  }
+
+  function engancharEventos(row) {
+    row.querySelector('.producto-select').addEventListener('change', () => {
+      actualizarFila(row);
+      actualizarTotal();
+    });
+
+    row.querySelector('.cantidad-input').addEventListener('input', () => {
+      actualizarFila(row);
+      actualizarTotal();
+    });
+
+    row.querySelector('.btn-eliminar').addEventListener('click', () => {
+      const filas = tablaBody.querySelectorAll('.item-row');
+      if (filas.length <= 1) return; // no borrar la última
+      row.remove();
+      actualizarTotal();
+    });
+  }
+
+  // fila inicial
+  const filaInicial = tablaBody.querySelector('.item-row');
+  engancharEventos(filaInicial);
+  actualizarFila(filaInicial);
+  actualizarTotal();
+
+  // agregar fila
+  btnAgregar.addEventListener('click', function () {
+    const ultima = tablaBody.querySelectorAll('.item-row');
+    const nueva = ultima[ultima.length - 1].cloneNode(true);
+
+    // reset
+    nueva.querySelector('.producto-select').selectedIndex = 0;
+    nueva.querySelector('.cantidad-input').value = 1;
+    nueva.querySelector('.precio-ref').textContent = '-';
+    nueva.querySelector('.subtotal-ref').textContent = '-';
+    nueva.querySelector('.precio-ref').classList.add('text-muted');
+    nueva.querySelector('.subtotal-ref').classList.add('text-muted');
+
+    // re-enganchar eventos (clone no clona listeners)
+    engancharEventos(nueva);
+
+    tablaBody.appendChild(nueva);
+    actualizarTotal();
+  });
+
+  // recomendado por vendedor: mostrar/ocultar select
+  function toggleVendedor() {
+    const esSi = recSi.checked;
+    wrapVendedor.style.display = esSi ? 'block' : 'none';
+    if (!esSi) selectVendedor.value = '';
+  }
+  recNo.addEventListener('change', toggleVendedor);
+  recSi.addEventListener('change', toggleVendedor);
+  toggleVendedor();
+});
+</script>
+{% endblock %}

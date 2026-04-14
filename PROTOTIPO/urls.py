@@ -1,15 +1,11 @@
 from django.contrib import admin
-from django.urls import path
-from django.http import HttpResponse
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-def home(request):
-    return HttpResponse("🚀 FUNCIONA 100% RENDER")
-
 urlpatterns = [
-    path("", home),  # 👈 ESTO ES LO IMPORTANTE
     path("admin/", admin.site.urls),
+    path("cotizador/", include(("cotizador.urls", "cotizador"), namespace="cotizador")),
 ]
 
 if settings.DEBUG:

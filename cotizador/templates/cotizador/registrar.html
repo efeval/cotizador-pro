@@ -1,0 +1,36 @@
+{% extends "cotizador/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Registro{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow">
+      <div class="card-body">
+        <h4 class="card-title mb-3 text-center">Crear cuenta</h4>
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form|crispy }}
+
+          <div class="d-grid gap-2 mt-3">
+            <button type="submit" class="btn btn-primary">Registrarme</button>
+
+            <a class="btn btn-outline-secondary" href="{% url 'cotizador:home_publica' %}">
+              Ver catálogo (sin cuenta)
+            </a>
+          </div>
+        </form>
+
+        <hr>
+
+        <p class="text-center mb-0">
+          ¿Ya tienes cuenta?
+          <a href="{% url 'cotizador:login' %}">Inicia sesión</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
