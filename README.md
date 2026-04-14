@@ -20,7 +20,19 @@ Sistema web tipo SaaS para gestión de PYMES, catálogo público y generación d
 ## 🌐 Demo en producción
 👉 https://TU-URL.onrender.com
 
-## 📸 Capturas
+## 📸 Capturas del sistema
+
+### 🏪 Catálogo de PYMES
+![Catálogo](screenshots/catalogo.png)
+
+### 📊 Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### ➕ Crear Pyme
+![Crear Pyme](screenshots/crear-pyme.png)
+
+### 📄 Cotización
+![Cotización](screenshots/cotizacion.png)
 
 ## 👨‍💻 Autor
 Fernando Valdés
