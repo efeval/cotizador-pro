@@ -22,16 +22,9 @@ Sistema web tipo SaaS para gestión de PYMES, catálogo público y generación d
 
 ## 🚀 Vista del sistema
 
-### 📊 Catálogo
 ![Catálogo](screenshots/catalogo.png)
-
-### 📄 Cotización
 ![Cotización](screenshots/cotizacion.png)
-
-### 🏢 Crear Pyme
-![Crear Pyme](screenshots/crear-pyme.png)
-
-### 📊 Dashboard
+![Crear Pyme](screenshots/crear_pyme.png)
 ![Dashboard](screenshots/dashboard.png)
 
 ## 👨‍💻 Autor
