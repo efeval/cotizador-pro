@@ -22,22 +22,17 @@ Sistema web tipo SaaS para gestión de PYMES, catálogo público y generación d
 
 ## 🚀 Vista del sistema
 
-<p align="center">
-  <img src="screenshots/catalogo.png" width="700"/>
-</p>
+### 📊 Catálogo
+![Catálogo](screenshots/catalogo.png)
 
-<p align="center">
-  <img src="screenshots/dashboard.png" width="700"/>
-</p>
+### 📄 Cotización
+![Cotización](screenshots/cotizacion.png)
 
-<p align="center">
-  <img src="screenshots/crear-pyme.png" width="700"/>
-</p>
+### 🏢 Crear Pyme
+![Crear Pyme](screenshots/crear-pyme.png)
 
-<p align="center">
-  <img src="screenshots/cotizacion.png" width="700"/>
-</p>
-
+### 📊 Dashboard
+![Dashboard](screenshots/dashboard.png)
 
 ## 👨‍💻 Autor
 Fernando Valdés
