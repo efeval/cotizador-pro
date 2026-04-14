@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 def home(request):
-    return HttpResponse("🚀 Cotizador PRO funcionando en Render")
+    return HttpResponse("🚀 FUNCIONA 100% RENDER")
 
 urlpatterns = [
     path("", home),  # 👈 ESTO ES LO IMPORTANTE
