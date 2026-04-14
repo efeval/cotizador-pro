@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,8 +23,6 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "crispy_forms",
     "crispy_bootstrap5",
-
-    "cotizador",
 ]
 
 # ⚙️ Middleware
@@ -51,7 +50,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "cotizador.context_processors.user_context",
             ],
         },
     },
@@ -60,8 +58,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "PROTOTIPO.wsgi.application"
 
 # 🗄 Base de datos (Render PostgreSQL)
-import dj_database_url
-
 DATABASES = {
     "default": dj_database_url.config(
         default=os.getenv("DATABASE_URL")
@@ -82,7 +78,7 @@ TIME_ZONE = "America/Santiago"
 USE_I18N = True
 USE_TZ = True
 
-# 📁 Static files (IMPORTANTE PARA RENDER)
+# 📁 Static files
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
@@ -90,10 +86,10 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# 🔑 Login
-LOGIN_URL = "/cotizador/login/"
-LOGIN_REDIRECT_URL = "/cotizador/dashboard/"
-LOGOUT_REDIRECT_URL = "/cotizador/"
+# 🔑 Login (temporal sin cotizador)
+LOGIN_URL = "/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 # 🎨 Crispy
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
